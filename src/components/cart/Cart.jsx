@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import OrderConfirmationModal from "../modal/ConfirmOrderModal";
 import { useAppContext } from "../../context/Context";
-import Card from "../card/Card";
-
+import cartImage from "../../assets/cart.png";
 export default function Cart() {
   const { state, dispatch } = useAppContext();
   const { cart } = state;
@@ -14,52 +13,57 @@ export default function Cart() {
     return acc + curr.price * curr.qty;
   }, 0);
 
+  const totalQuantity = cart.reduce((acc, curr) => {
+    return acc + curr.qty;
+  }, 0);
+
   const handleOpenModal = () => {
     setIsModalOpen(true);
   };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
+    dispatch({ type: "EMPTY_CART" });
   };
 
   return (
-    <div className="w-1/3 h-fit bg-white rounded-2xl p-6">
+    <div className="w-full p-6 bg-white h-fit rounded-2xl ">
       <p className="text-2xl font-bold text-amber-700">
-        Your Cart ({cart.length})
+        Your Cart ({totalQuantity})
       </p>
 
-      <div className="mt-6 flex flex-col text-center font-medium">
+      <div className="flex flex-col mt-6 font-medium text-center">
         {/* ----------- cart products container-------- */}
-        <div className="w-full flex flex-col gap-8">
+        <div className="flex flex-col w-full gap-8">
           {cart.length > 0 ? (
             <>
               {cart.map((product) => (
                 <div
                   key={product.id}
                   product={product}
-                  className="w-full flex items-center gap-8"
+                  className="flex items-center w-full gap-8"
                 >
                   <img
                     src={product.image}
                     alt={product.name}
-                    className="w-16 h-16 object-cover rounded-lg"
+                    className="object-cover w-16 h-16 rounded-lg"
                   />
                   <div className="w-[70%] flex flex-col text-left">
                     <p className="text-lg font-semibold">{product.name}</p>
-                    <div className="w-full flex items-center justify-between">
-                      <p className="text-amber-700 text-sm font-medium">
+                    <div className="flex items-center justify-between w-full">
+                      <p className="text-sm font-medium text-amber-700">
                         ${product.price}
                       </p>
-                      <p className="text-sm text-amber-700 font-medium">
+                      <p className="text-sm font-medium text-amber-700">
                         Qty: {product.qty}
                       </p>
                     </div>
-                    <div className="w-full flex items-center justify-between">
+                    <div className="flex items-center justify-between w-full">
                       <button
                         onClick={() =>
                           dispatch({ type: "REMOVE_ITEM", payload: product })
                         }
-                        className="text-amber-700 text-sm font-medium"
+                        className="text-sm font-medium text-amber-700"
                       >
                         Remove
                       </button>
@@ -67,23 +71,28 @@ export default function Cart() {
                   </div>
                 </div>
               ))}
-              <div className="w-full flex flex-col gap-2">
+              <div className="flex flex-col w-full gap-2">
                 <div className="w-full mt-6">
                   <p className="text-xl font-bold text-amber-700">
-                    Total Amount: ${totalAmount}
+                    Total Amount: ₹{totalAmount}
                   </p>
                 </div>
 
                 <button
                   onClick={handleOpenModal}
-                  className="bg-amber-700 text-white px-4 py-2 rounded-full hover:bg-amber-800 transition-all duration-300"
+                  className="px-4 py-2 text-white transition-all duration-300 rounded-full bg-amber-700 hover:bg-amber-800"
                 >
                   Place Order
                 </button>
               </div>
             </>
           ) : (
-            <p>Your cart is currently empty.</p>
+            <>
+              <div>
+                <img src={cartImage} alt="cart" className="w-1/2 mx-auto" />
+                <p>Your cart is currently empty.</p>
+              </div>
+            </>
           )}
         </div>
 
